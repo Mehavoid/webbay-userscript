@@ -18,7 +18,6 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "http-server": "^14.1.1",
-    "prettier": "^2.7.1",
-    "tickplate": "^1.0.5"
+    "prettier": "^2.7.1"
   }
 }
