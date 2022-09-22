@@ -6,8 +6,8 @@ const path = require('path');
 const projectPackage = require('../package.json');
 
 const CWD = process.cwd();
+const SRC = path.join(CWD, 'src');
 const DIST = path.join(CWD, 'dist');
-const SCRIPT = path.join(CWD, 'src', 'index.js');
 
 const ARGS_TYPE = {
   match: 'array',
@@ -21,6 +21,15 @@ const HEAD = '// ==UserScript==';
 const TAIL = '// ==/UserScript==';
 
 const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+const trim = (s) => s.replaceAll('\n', '').replaceAll(' ', '');
+
+const wrapStyles = (styles) => `!function(a, b, c, d, e) {
+  d = document;
+  e = d.createElement(b);
+  e.textContent = a;
+  d.getElementsByTagName(c)[0].appendChild(e);
+}('${styles}', 'style', 'head');`;
 
 const buildMetaLine = (value, meta) => {
   const pre = `// @${meta}`;
@@ -73,8 +82,10 @@ const handleArgs = (argv) => {
 
   const lines = buildMeta(data);
   const metadata = [HEAD, lines, TAIL].join('\n');
-  const source = await fs.readFile(SCRIPT, 'utf-8');
-  const userscript = [metadata, source].join('\n\n');
+  const js = await fs.readFile(path.join(SRC, 'index.js'), 'utf-8');
+  const styles = await fs.readFile(path.join(SRC, 'style.css'), 'utf-8');
+  const css = trim(wrapStyles(styles));
+  const userscript = [metadata, js, css].join('\n\n');
 
   await fs.writeFile(path.join(DIST, user), userscript);
   await fs.writeFile(path.join(DIST, meta), metadata);
