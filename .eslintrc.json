@@ -6,5 +6,8 @@
   },
   "parserOptions": {
     "ecmaVersion": "latest"
+  },
+  "globals": {
+    "API_URL": "readonly"
   }
 }

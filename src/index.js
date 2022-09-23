@@ -10,10 +10,9 @@ const request = (url, body) =>
   });
 
 const api = (data) => {
-  const url = 'http://127.0.0.1:8787/api/link';
   const form = new FormData();
   for (const [k, v] of Object.entries(data)) form.set(k, v);
-  return request(url, form);
+  return request(API_URL, form);
 };
 
 const redirect = (url) => {

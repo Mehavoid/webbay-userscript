@@ -10,7 +10,9 @@ const SRC = path.join(CWD, 'src');
 const DIST = path.join(CWD, 'dist');
 
 const ARGS_TYPE = {
+  url: 'string',
   match: 'array',
+  update: 'string',
 };
 
 const DASH = 2;
@@ -23,6 +25,8 @@ const TAIL = '// ==/UserScript==';
 const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const trim = (s) => s.replaceAll('\n', '').replaceAll(' ', '');
+
+const wrapIIFE = (src, url) => `((API_URL) => {\n${src}\n})('${url}');`;
 
 const wrapStyles = (styles) => `!function(a, b, c, d, e) {
   d = document;
@@ -59,6 +63,8 @@ const handleArgs = (argv) => {
       const set = args.get(name);
       const values = set ? set.add(value) : new Set([value]);
       args.set(name, values);
+    } else if (kind === 'string') {
+      args.set(name, value);
     }
   }
   return args;
@@ -76,6 +82,8 @@ const handleArgs = (argv) => {
     match: [...args.get('match')],
     grant: 'none',
     version: projectPackage.version,
+    updateURL: args.get('update'),
+    downloadURL: args.get('update'),
     run: 'document-end',
     noframes: '',
   };
@@ -83,9 +91,10 @@ const handleArgs = (argv) => {
   const lines = buildMeta(data);
   const metadata = [HEAD, lines, TAIL].join('\n');
   const js = await fs.readFile(path.join(SRC, 'index.js'), 'utf-8');
+  const script = wrapIIFE(js, args.get('url'));
   const styles = await fs.readFile(path.join(SRC, 'style.css'), 'utf-8');
-  const css = trim(wrapStyles(styles));
-  const userscript = [metadata, js, css].join('\n\n');
+  const css = wrapStyles(trim(styles));
+  const userscript = [metadata, css, script].join('\n\n');
 
   await fs.writeFile(path.join(DIST, user), userscript);
   await fs.writeFile(path.join(DIST, meta), metadata);
