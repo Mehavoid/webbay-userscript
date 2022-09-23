@@ -84,7 +84,7 @@ const handleArgs = (argv) => {
     version: projectPackage.version,
     updateURL: args.get('update'),
     downloadURL: args.get('update'),
-    run: 'document-end',
+    'run-at': 'document-end',
     noframes: '',
   };
 
