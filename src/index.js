@@ -55,7 +55,6 @@ const eventHandler = (event) => {
   const { target } = event;
   const fn = tags[target.tagName];
   if (!(fn && fn(target))) return false;
-  console.info({ event });
   setPrivacy(target);
   event.preventDefault();
   return api({ link: target.href }).then(ok, fail).then(warn(target));
