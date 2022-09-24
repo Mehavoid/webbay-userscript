@@ -45,7 +45,6 @@
   opacity: 0;
   z-index: 1;
 }
-
 [data-wb-tooltip]::after,
 [data-wb-tooltip]::before {
   position: absolute;
@@ -54,7 +53,6 @@
   transform: translate(0, -50%);
   pointer-events: none;
 }
-
 [data-wb-tooltip]:hover::after,
 [data-wb-tooltip]:hover::before {
   opacity: 1;
