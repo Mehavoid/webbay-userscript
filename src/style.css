@@ -16,3 +16,45 @@
 .wb-noclick {
   pointer-events: none;
 }
+[data-wb-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+[data-wb-tooltip]::after {
+  font-family: sans-serif;
+  font-size: 12px;
+  text-decoration: none;
+  text-align: left;
+  background: #111;
+  border-radius: 2px;
+  box-shadow: 0 15px 15px -10px #111;
+  color: #fff;
+  content: attr(data-wb-tooltip);
+  margin-left: 10px;
+  padding: 7.5px 7px;
+  white-space: nowrap;
+  opacity: 0;
+  z-index: 1;
+}
+[data-wb-tooltip]::before {
+  width: 0;
+  height: 0;
+  border: 6px solid rgba(255, 255, 255, 0);
+  border-right-color: #111;
+  content: '';
+  opacity: 0;
+  z-index: 1;
+}
+[data-wb-tooltip]::after,
+[data-wb-tooltip]::before {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translate(0, -50%);
+  pointer-events: none;
+}
+[data-wb-tooltip]:hover::after,
+[data-wb-tooltip]:hover::before {
+  opacity: 1;
+  pointer-events: none;
+}
