@@ -6,7 +6,7 @@ const request = (url, body) =>
   fetch(url, { method: 'POST', body }).then((res) => {
     const { status } = res;
     if (status === 200) return res.json();
-    throw new Error('HTTP status code: ${status}');
+    throw new Error('HTTP status code: ' + status);
   });
 
 const api = (data) => {
