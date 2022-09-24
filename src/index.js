@@ -35,20 +35,23 @@ const match = ({ host }) => {
 
 const ok = ({ success, data }) => {
   if (success) redirect(data);
-  return success;
+  return { success, text: data };
 };
 
-const fail = () => false;
+const fail = (e) => ({ success: false, text: e.message });
 
-const warn = (target) => (success) => {
-  const span = document.createElement('span');
-  span.classList.add('wb', `wb-${success}`);
-  target.appendChild(span);
-  if (success) {
-    target.setAttribute('tabindex', '-1');
-    target.classList.add('wb-noclick');
-  }
-};
+const warn =
+  (target) =>
+  ({ success, text }) => {
+    const span = document.createElement('span');
+    span.classList.add('wb', `wb-${success}`);
+    span.setAttribute('title', text);
+    target.appendChild(span);
+    if (success) {
+      target.setAttribute('tabindex', '-1');
+      target.classList.add('wb-noclick');
+    }
+  };
 
 const tags = {
   A: match,
