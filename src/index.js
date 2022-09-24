@@ -43,8 +43,11 @@ const fail = () => false;
 const warn = (target) => (success) => {
   const span = document.createElement('span');
   span.classList.add('wb', `wb-${success}`);
-  if (success) target.classList.add('wb-noclick');
   target.appendChild(span);
+  if (success) {
+    target.setAttribute('tabindex', '-1');
+    target.classList.add('wb-noclick');
+  }
 };
 
 const tags = {
