@@ -22,18 +22,26 @@ const NODE_COMMAND = 2;
 const HEAD = '// ==UserScript==';
 const TAIL = '// ==/UserScript==';
 
-const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-
-const trim = (s) => s.replaceAll('\n', '').replaceAll(' ', '');
-
-const wrapIIFE = (src, url) => `((API_URL) => {\n${src}\n})('${url}');`;
-
-const wrapStyles = (styles) => `!function(a, b, c, d, e) {
+const IIFE_START = `!function(a, b, c, d, e) {
   d = document;
   e = d.createElement(b);
   e.textContent = a;
   d.getElementsByTagName(c)[0].appendChild(e);
-}('${styles}', 'style', 'head');`;
+}(`;
+
+const IIFE_END = ');';
+
+const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+const trim = (s) => s.replaceAll('\n', '').replaceAll(' ', '');
+
+const backtick = (s) => '`' + s + '`';
+
+const wrapIIFE = (src, url) =>
+  `((W, D, U) => {\n${src}\n})(window, document, '${url}');`;
+
+const wrap = (src, type) =>
+  IIFE_START + `${backtick(src)}, '${type}', 'head'` + IIFE_END;
 
 const buildMetaLine = (value, meta) => {
   const pre = `// @${meta}`;
@@ -91,9 +99,10 @@ const handleArgs = (argv) => {
   const lines = buildMeta(data);
   const metadata = [HEAD, lines, TAIL].join('\n');
   const js = await fs.readFile(path.join(SRC, 'index.js'), 'utf-8');
-  const script = wrapIIFE(js, args.get('url'));
+  const iife = wrapIIFE(js, args.get('url'));
+  const script = wrap(iife, 'script');
   const styles = await fs.readFile(path.join(SRC, 'style.css'), 'utf-8');
-  const css = wrapStyles(trim(styles));
+  const css = wrap(styles, 'style');
   const userscript = [metadata, css, script].join('\n\n');
 
   await fs.writeFile(path.join(DIST, user), userscript);
