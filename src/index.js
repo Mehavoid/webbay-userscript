@@ -15,14 +15,15 @@ const api = (data) => {
   return request(API_URL, form);
 };
 
+const setPrivacy = (a) => a.setAttribute('rel', 'noopener noreferrer');
+
 const redirect = (url) => {
   const a = document.createElement('a');
   a.href = url;
   a.target = '_blank';
+  setPrivacy(a);
   a.dispatchEvent(new MouseEvent('click'));
 };
-
-const setPrivacy = (a) => a.setAttribute('rel', 'noopener noreferrer');
 
 const match = ({ host }) => {
   const chunks = host.split('.');
@@ -53,17 +54,25 @@ const warn =
     }
   };
 
-const tags = {
-  A: match,
+const bindEvent = (element, type, listener, capture) => {
+  const handler = (event) => {
+    element.removeEventListener(type, handler, capture);
+    listener.call(this, event);
+  };
+  element.addEventListener(type, handler, capture);
 };
 
 const eventHandler = (event) => {
   const { target } = event;
-  const fn = tags[target.tagName];
-  if (!(fn && fn(target))) return false;
+  const m = match(target);
   setPrivacy(target);
+  if (!m) return false;
+  api({ link: target.href }).then(ok, fail).then(warn(target));
   event.preventDefault();
-  return api({ link: target.href }).then(ok, fail).then(warn(target));
 };
 
-document.addEventListener('click', eventHandler, false);
+for (const link of document.links) {
+  if (link.href === document.href) continue;
+  if (link.target !== '_blank') continue;
+  bindEvent(link, 'click', eventHandler, false);
+}
