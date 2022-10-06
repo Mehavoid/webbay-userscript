@@ -33,8 +33,6 @@ const IIFE_END = ');';
 
 const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-const trim = (s) => s.replaceAll('\n', '').replaceAll(' ', '');
-
 const backtick = (s) => '`' + s + '`';
 
 const wrapIIFE = (src, url) =>
