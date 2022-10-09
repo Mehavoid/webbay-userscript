@@ -59,7 +59,7 @@ const warn =
 const bindEvent = (element, type, listener, capture) => {
   const handler = (event) => {
     element.removeEventListener(type, handler, capture);
-    listener.call(this, event);
+    listener.call(null, event);
   };
   element.addEventListener(type, handler, capture);
 };
@@ -68,9 +68,10 @@ const eventHandler = (event) => {
   const { target } = event;
   const m = match(target);
   setPrivacy(target);
-  if (!m) return false;
-  api({ link: target.href }).then(ok, fail).then(warn(target));
-  event.preventDefault();
+  if (m) {
+    api({ link: target.href }).then(ok, fail).then(warn(target));
+    event.preventDefault();
+  }
 };
 
 for (const link of D.links) {
