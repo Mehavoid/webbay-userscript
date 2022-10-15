@@ -50,10 +50,6 @@ const warn =
     span.classList.add('wb', 'wb-' + success.toString());
     span.setAttribute('data-wb-tooltip', text);
     target.appendChild(span);
-    if (success) {
-      target.setAttribute('tabindex', '-1');
-      target.classList.add('wb-noclick');
-    }
   };
 
 const bindEvent = (element, type, listener, capture) => {
