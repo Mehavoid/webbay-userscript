@@ -51,7 +51,9 @@
   pointer-events: none;
 }
 [data-wb-tooltip]:hover::after,
-[data-wb-tooltip]:hover::before {
+[data-wb-tooltip]:hover::before,
+[data-wb-tooltip]:focus::after,
+[data-wb-tooltip]:focus::before {
   opacity: 1;
   pointer-events: none;
 }
