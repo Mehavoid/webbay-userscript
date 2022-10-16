@@ -49,6 +49,7 @@ const warn =
     const span = D.createElement('span');
     span.classList.add('wb', 'wb-' + success.toString());
     span.setAttribute('data-wb-tooltip', text);
+    span.setAttribute('tabindex', '0');
     target.appendChild(span);
     if (success) {
       target.setAttribute('tabindex', '-1');
