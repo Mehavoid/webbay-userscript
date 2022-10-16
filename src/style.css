@@ -13,9 +13,6 @@
 .wb-false {
   background-color: #e74c3c;
 }
-.wb-noclick {
-  pointer-events: none;
-}
 [data-wb-tooltip] {
   position: relative;
   cursor: pointer;
