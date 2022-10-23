@@ -21,15 +21,17 @@
   font-family: sans-serif;
   font-size: 12px;
   text-decoration: none;
-  text-align: left;
+  text-overflow: ellipsis;
   background: #111;
   border-radius: 2px;
   box-shadow: 0 15px 15px -10px #111;
   color: #fff;
   content: attr(data-wb-tooltip);
   margin-left: 10px;
+  max-width: 280px;
   padding: 7.5px 7px;
   white-space: nowrap;
+  overflow: hidden;
   opacity: 0;
   z-index: 1;
 }
