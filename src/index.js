@@ -4,12 +4,18 @@ const { Object, fetch, FormData, MouseEvent } = W;
 
 const DOMAIN = ['krakenfiles', 'webshare'];
 
-const request = (url, body) =>
-  fetch(url, { method: 'POST', body }).then((res) => {
+const TIMEOUT = 10000;
+
+const request = (url, body) => {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), TIMEOUT);
+  return fetch(url, { method: 'POST', signal: ac.signal, body }).then((res) => {
+    clearTimeout(timer);
     const { status } = res;
     if (status === 200) return res.json();
     throw new Error('HTTP status code: ' + status);
   });
+};
 
 const api = (data) => {
   const form = new FormData();
