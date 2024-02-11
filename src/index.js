@@ -76,7 +76,7 @@ const eventHandler = (event) => {
 };
 
 for (const link of document.links) {
-  if (link.host === document.domain) continue;
+  if (link.host === location.hostname) continue;
   if (link.target !== '_blank') continue;
   bindEvent(link, 'click', eventHandler, false);
 }
