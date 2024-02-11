@@ -3,6 +3,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const util = require('util');
+const vm = require('vm');
 
 const projectPackage = require('../package.json');
 
@@ -41,11 +42,16 @@ const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const backtick = (s) => '`' + s + '`';
 
-const wrapIIFE = (src, url) =>
-  `((W, D, U) => {\n${src}\n})(window, document, '${url}');`;
+const quote = (s) => '"' + s + '"';
 
-const wrap = (src, type) =>
-  IIFE_START + `${backtick(src)}, '${type}', 'head'` + IIFE_END;
+const wrapCode = (source, context) => {
+  const func = vm.compileFunction(source, Object.keys(context));
+  const args = Object.values(context).map(quote);
+  return '!' + func.toString() + '(' + args.join(',') + ');';
+};
+
+const wrapIIFE = (...args) =>
+  IIFE_START + Object.values(args).map(backtick).join(',') + IIFE_END;
 
 const buildMetaLine = (value, meta) => {
   const pre = `// @${meta}`;
@@ -61,17 +67,18 @@ const buildMeta = (data) => {
     const values = Array.isArray(v) ? v : [v];
     for (const val of values) lines.push(buildMetaLine(val, k));
   }
-  return lines.join('\n');
+  const meta = lines.join('\n');
+  return [HEAD, meta, TAIL].join('\n');
 };
 
 (async (args) => {
   const [name] = projectPackage.name.split('-');
-  const user = name + '.user.js';
-  const meta = name + '.meta.js';
+  const scriptName = `${name}.user.js`;
+  const scriptMetaName = `${name}.meta.js`;
 
   const data = {
     name: toUpperCamel(name),
-    namespace: user,
+    namespace: scriptName,
     license: projectPackage.license,
     match: args.match,
     grant: 'none',
@@ -82,15 +89,18 @@ const buildMeta = (data) => {
     noframes: '',
   };
 
-  const lines = buildMeta(data);
-  const metadata = [HEAD, lines, TAIL].join('\n');
-  const js = await fs.readFile(path.join(SRC, 'index.js'), 'utf-8');
-  const iife = wrapIIFE(js, args.url);
-  const script = wrap(iife, 'script');
-  const styles = await fs.readFile(path.join(SRC, 'style.css'), 'utf-8');
-  const css = wrap(styles, 'style');
-  const userscript = [metadata, css, script].join('\n\n');
+  const [js, css] = await Promise.all([
+    fs.readFile(path.join(SRC, 'index.js'), 'utf-8'),
+    fs.readFile(path.join(SRC, 'style.css'), 'utf-8'),
+  ]);
+  const meta = buildMeta(data);
+  const code = wrapCode(js, { API_URL: args.url });
+  const script = wrapIIFE(code, 'script', 'head');
+  const style = wrapIIFE(css, 'style', 'head');
+  const userscript = [meta, style, script].join('\n\n');
 
-  await fs.writeFile(path.join(DIST, user), userscript);
-  await fs.writeFile(path.join(DIST, meta), metadata);
+  await Promise.all([
+    fs.writeFile(path.join(DIST, scriptName), userscript),
+    fs.writeFile(path.join(DIST, scriptMetaName), meta),
+  ]);
 })(util.parseArgs({ options }).values);

@@ -8,8 +8,6 @@
     "ecmaVersion": "latest"
   },
   "globals": {
-    "W": "readonly",
-    "D": "readonly",
-    "U": "readonly"
+    "API_URL": "readonly"
   }
 }

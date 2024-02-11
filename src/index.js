@@ -1,7 +1,5 @@
 'use strict';
 
-const { Object, fetch, FormData, MouseEvent } = W;
-
 const DOMAIN = ['krakenfiles', 'webshare'];
 
 const TIMEOUT = 10000;
@@ -20,13 +18,13 @@ const request = (url, body) => {
 const api = (data) => {
   const form = new FormData();
   for (const [k, v] of Object.entries(data)) form.set(k, v);
-  return request(U, form);
+  return request(API_URL, form);
 };
 
 const setPrivacy = (a) => a.setAttribute('rel', 'noopener noreferrer');
 
 const redirect = (url) => {
-  const a = D.createElement('a');
+  const a = document.createElement('a');
   a.href = url;
   a.target = '_blank';
   setPrivacy(a);
@@ -52,7 +50,7 @@ const fail = (e) => ({ success: false, text: e.message });
 const warn =
   (target) =>
   ({ success, text }) => {
-    const span = D.createElement('span');
+    const span = document.createElement('span');
     span.classList.add('wb', 'wb-' + success.toString());
     span.setAttribute('data-wb-tooltip', text);
     span.setAttribute('tabindex', '0');
@@ -77,8 +75,8 @@ const eventHandler = (event) => {
   }
 };
 
-for (const link of D.links) {
-  if (link.host === D.domain) continue;
+for (const link of document.links) {
+  if (link.host === document.domain) continue;
   if (link.target !== '_blank') continue;
   bindEvent(link, 'click', eventHandler, false);
 }
