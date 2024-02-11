@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "http-server -c-1 .",
+    "dev": "node tools/server.js",
     "lint": "eslint . && prettier -c \"**/*.{js,css,json,md}\"",
     "f": "prettier --write \"**/*.{js,css,json,md}\""
   },
@@ -17,7 +17,6 @@
     "eslint-config-metarhia": "^8.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "http-server": "^14.1.1",
     "prettier": "^3.0.3"
   }
 }
