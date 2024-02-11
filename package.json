@@ -1,15 +1,13 @@
 {
   "name": "webbay-userscript",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node tools/server.js",
     "lint": "eslint . && prettier -c \"**/*.{js,css,json,md}\"",
     "f": "prettier --write \"**/*.{js,css,json,md}\""
   },
-  "keywords": [],
+  "private": true,
   "author": "Mehavoid",
   "license": "WTFPL",
   "devDependencies": {
