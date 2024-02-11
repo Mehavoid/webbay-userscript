@@ -2,6 +2,7 @@
 
 const fs = require('fs').promises;
 const path = require('path');
+const util = require('util');
 
 const projectPackage = require('../package.json');
 
@@ -9,15 +10,20 @@ const CWD = process.cwd();
 const SRC = path.join(CWD, 'src');
 const DIST = path.join(CWD, 'dist');
 
-const ARGS_TYPE = {
-  url: 'string',
-  match: 'array',
-  update: 'string',
+const options = {
+  url: {
+    type: 'string',
+  },
+  match: {
+    type: 'string',
+    multiple: true,
+  },
+  update: {
+    type: 'string',
+  },
 };
 
-const DASH = 2;
 const META_PRE = 18;
-const NODE_COMMAND = 2;
 
 const HEAD = '// ==UserScript==';
 const TAIL = '// ==/UserScript==';
@@ -58,24 +64,6 @@ const buildMeta = (data) => {
   return lines.join('\n');
 };
 
-const handleArgs = (argv) => {
-  const args = new Map();
-  for (const arg of argv.slice(NODE_COMMAND)) {
-    const length = arg.indexOf('=');
-    const name = arg.substring(DASH, length);
-    const value = arg.substring(length + 1, arg.length);
-    const kind = ARGS_TYPE[name];
-    if (kind === 'array') {
-      const set = args.get(name);
-      const values = set ? set.add(value) : new Set([value]);
-      args.set(name, values);
-    } else if (kind === 'string') {
-      args.set(name, value);
-    }
-  }
-  return args;
-};
-
 (async (args) => {
   const [name] = projectPackage.name.split('-');
   const user = name + '.user.js';
@@ -85,11 +73,11 @@ const handleArgs = (argv) => {
     name: toUpperCamel(name),
     namespace: user,
     license: projectPackage.license,
-    match: [...args.get('match')],
+    match: args.match,
     grant: 'none',
     version: projectPackage.version,
-    updateURL: args.get('update'),
-    downloadURL: args.get('update'),
+    updateURL: args.update,
+    downloadURL: args.update,
     'run-at': 'document-end',
     noframes: '',
   };
@@ -97,7 +85,7 @@ const handleArgs = (argv) => {
   const lines = buildMeta(data);
   const metadata = [HEAD, lines, TAIL].join('\n');
   const js = await fs.readFile(path.join(SRC, 'index.js'), 'utf-8');
-  const iife = wrapIIFE(js, args.get('url'));
+  const iife = wrapIIFE(js, args.url);
   const script = wrap(iife, 'script');
   const styles = await fs.readFile(path.join(SRC, 'style.css'), 'utf-8');
   const css = wrap(styles, 'style');
@@ -105,4 +93,4 @@ const handleArgs = (argv) => {
 
   await fs.writeFile(path.join(DIST, user), userscript);
   await fs.writeFile(path.join(DIST, meta), metadata);
-})(handleArgs(process.argv));
+})(util.parseArgs({ options }).values);
