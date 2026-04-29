@@ -4,8 +4,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node tools/server.js",
-    "lint": "eslint . && prettier -c \"**/*.{js,css,json,md}\"",
-    "f": "prettier --write \"**/*.{js,css,json,md}\""
+    "lint": "eslint . && prettier -c \"**/*.{js,mjs,css,json,md}\"",
+    "f": "prettier --write \"**/*.{js,mjs,css,json,md}\""
   },
   "private": true,
   "author": "Mehavoid",
